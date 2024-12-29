@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Extractor</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid black;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <h1>Data Extractor</h1>
+  <textarea id="inputData" rows="15" cols="80" placeholder="Paste your text here"></textarea>
+  <br><br>
+  <button onclick="extractData()">Extract Data</button>
+  <input type="hidden" name="linkedin-url" id="linkedin-url"/>
+
+  <h2>Extracted Data:</h2>
+  <table id="outputTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Industry</th>
+        <th>LinkedIn Page</th>
+        <th>Website</th>
+        <th>Associated Members</th>
+        <th>Location</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Extracted data will be inserted here -->
+    </tbody>
+  </table>
+
+  <script>
+    function extractData() {
+      const inputText = document.getElementById('inputData').value;
+
+      // Extract values using regex
+      const nameMatch = inputText.match(/Overview\s+([\w\s&]+)\s+is/);
+      const industryMatch = inputText.match(/Industry\s+([\w\s&]+)(?:\s+Company size|$)/); // Stop at "Company size"
+      const linkedinMatch = document.getElementById('linkedin-url').value;
+      const websiteMatch = inputText.match(/Website\s+(http[^\s]+)/);
+      const membersMatch = inputText.match(/(\d+)\s+associated members/i); // Extract number before "associated members"
+      const locationMatch = inputText.match(/Headquarters\s+([\w\s,]+)/);
+
+      // Extracted data
+      const name = nameMatch ? nameMatch[1].trim() : "NAN";
+      const industry = industryMatch ? industryMatch[1].trim() : "NAN";
+      const linkedinPage = linkedinMatch || "NAN";
+      const website = websiteMatch ? websiteMatch[1].trim() : "NAN";
+      const associatedMembers = membersMatch ? membersMatch[1].trim() : "NAN";
+      const location = locationMatch ? locationMatch[1].trim() : "NAN";
+
+      // Insert the data into the table
+      const tableBody = document.getElementById('outputTable').getElementsByTagName('tbody')[0];
+      const newRow = tableBody.insertRow();
+
+      newRow.insertCell(0).textContent = name;
+      newRow.insertCell(1).textContent = industry;
+      newRow.insertCell(2).textContent = linkedinPage;
+      newRow.insertCell(3).textContent = website;
+      newRow.insertCell(4).textContent = associatedMembers;
+      newRow.insertCell(5).textContent = location;
+    }
+
+    document.querySelector("#inputData").addEventListener("paste", (event) => {
+      const htmlData = event.clipboardData.getData("text/html");
+      if (htmlData) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlData, "text/html");
+        const links = doc.querySelectorAll("a[href]");
+
+        // Find LinkedIn URL with '/about'
+        const linkedinAboutLink = Array.from(links).find(link => link.href.includes("/about"));
+        
+        if (linkedinAboutLink) {
+          const linkedinUrl = linkedinAboutLink.href.trim();
+          console.log("LinkedIn About URL:", linkedinUrl);
+
+          // Now set the LinkedIn URL in the textarea input data
+          document.getElementById('linkedin-url').value = linkedinUrl;
+        }
+      }
+    });
+  </script>
+</body>
+</html>
