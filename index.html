@@ -105,44 +105,99 @@
     newRow.insertCell(5).textContent = location;
 }
 
-    // Extract User Data
-    function extractUserData() {
-        const userInput = document.getElementById('userInputData').value;
+function extractUserData() {
+    const userInput = document.getElementById('userInputData').value;
 
-        // Split input by lines
-        const lines = userInput.split('\n').map(line => line.trim()).filter(line => line);
+    // Split input by lines
+    const lines = userInput.split('\n').map(line => line.trim()).filter(line => line);
 
-        // Name will always be in the first line
-        const nameMatch = lines[0].match(/^([\w.]+(?:\s[\w.]+)*)\s([\w]+),?/); // First and last name
-        const firstName = nameMatch ? nameMatch[1].trim() : "NAN";
-        const lastName = nameMatch ? nameMatch[2].trim() : "NAN";
+    // Name will always be in the first line
+    const nameMatch = lines[0].match(/^([\w.]+(?:\s[\w.]+)*)\s([\w]+),?/); // First and last name
+    const firstName = nameMatch ? nameMatch[1].trim() : "NAN";
+    const lastName = nameMatch ? nameMatch[2].trim() : "NAN";
 
-        // Extract position
-        let position = "NAN";
-        if (lines.length > 1) {
-            // Check lines for position
-            for (let i = 1; i < lines.length; i++) {
-                const line = lines[i];
-                const positionMatch = line.match(/^[\w\s&]+?(?=,|@| of | at |$)/i); // Extract up to a delimiter
-                if (positionMatch && !line.match(/degree connection|contact info/i)) {
-                    position = positionMatch[0].trim();
-                    break;
-                }
-            }
+    // Define list of positions
+    const positionList = [
+      "Operations, Customer Success & Customer Experience Leader, Board Member",
+      "Executive digital health technologist",
+      "Senior Director, Enterprise Architecture",
+      "Chief Operating Officer & Co-Founder",
+      "CEO & BOC Certified Orthotic Fitter",
+      "Founder and Clinical Director",
+      "Director of Product Management",
+      "Operations Manager",
+      "President and CEO",
+      "President/Owner",
+      "Senior Vice President & COO",
+      "Senior Vice President",
+      "Executive Vice President",
+      "Chief Medical Officer",
+      "Chief Business Officer",
+      "Director of Product",
+      "Managing Director",
+      "PMO Manager | CSM",
+      "Product Designer | Creator",
+      "Founder & CEO",
+      "Founder/CEO",
+      "Owner/Administrator",
+      "Owner",
+      "Manager",
+      "Founder",
+      "FOunder",
+      "FOunder & CEO",
+      "Co-Founder & COO",
+      "Co-Founder & CEO",
+      "Co-Founder & CTO",
+      "Cofounder and CTO",
+      "Co-founder & CEO",
+      "Co-Founder",
+      "Co-founder",
+      "CTO & Co-founder",
+      "CEO & Co-Founder",
+      "CEO & Co-founder",
+      "President & CEO",
+      "Vice President",
+      "Chief Executive Officer",
+      "Managing Director",
+      "Senior Project Manager",
+      "DME Owner",
+      "Director",
+      "Head of Engineering",
+      "Head of Sales",
+      "President",
+      "COD",
+      "VP",
+      "CTO",
+      "COO",
+      "Business Owner"
+    ];
+      // Extract position
+    let position = "NAN";
+    if (lines.length > 1) {
+    // Check lines for position
+    for (let i = 1; i < lines.length; i++) {
+        const line = lines[i];
+        // Check for exact match in position list, prioritizing longer matches
+        const matchedPosition = positionList.find(pos => line.includes(pos));
+        if (matchedPosition) {
+            position = matchedPosition;
+            break;
         }
-
-        // Get LinkedIn URL from the captured hidden input
-        const linkedinPage = document.getElementById('linkedin-url-profile').value || "NAN";
-
-        // Insert the data into the user table
-        const userTableBody = document.getElementById('userOutputTable').getElementsByTagName('tbody')[0];
-        const newRow = userTableBody.insertRow();
-
-        newRow.insertCell(0).textContent = firstName;
-        newRow.insertCell(1).textContent = lastName;
-        newRow.insertCell(2).textContent = position;
-        newRow.insertCell(3).innerHTML = '<a href="' + linkedinPage + '" target="_blank">' + linkedinPage + '</a>';
     }
+}
+
+    // Get LinkedIn URL from the captured hidden input
+    const linkedinPage = document.getElementById('linkedin-url-profile').value || "NAN";
+
+    // Insert the data into the user table
+    const userTableBody = document.getElementById('userOutputTable').getElementsByTagName('tbody')[0];
+    const newRow = userTableBody.insertRow();
+
+    newRow.insertCell(0).textContent = firstName;
+    newRow.insertCell(1).textContent = lastName;
+    newRow.insertCell(2).textContent = position;
+    newRow.insertCell(3).innerHTML = '<a href="' + linkedinPage + '" target="_blank">' + linkedinPage + '</a>';
+}
 
 
     // Capture LinkedIn URL on paste
