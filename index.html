@@ -16,11 +16,47 @@
       padding: 8px;
       text-align: left;
     }
+    .tooltip {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .tooltiptext {
+        font-size: 12px;
+        visibility: hidden;
+        width: 120px;
+        background-color: rgb(71, 69, 69);
+        color: #fff;
+        text-align: center;
+        padding: 7px;
+        border-radius: 5px;
+
+        /* Position the tooltip */
+        position: absolute;
+        z-index: 1;
+        bottom: -125%; /* Adjust to position above the div */
+        left: 100%;
+        transform: translateX(-50%);
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }
+
   </style>
 </head>
 <body>
-  <h1>Data Extractor</h1>
-
+  <h1 class="tooltip" >Data Extractor
+    <span class="tooltiptext">
+      In the about page of company's linkedin,<br/>
+      copy from name to specialities or Founded<br/>
+    </span>
+  </h1>
+<br/>
   <!-- Company Data Input -->
   <textarea id="inputData" rows="10" cols="80" placeholder="Paste company text here"></textarea>
   <br><br>
@@ -39,6 +75,7 @@
         <th>LinkedIn Page</th>
         <th>Website</th>
         <th>Associated Members</th>
+        <th>Specilities</th>
         <th>Location</th>
       </tr>
     </thead>
@@ -89,7 +126,7 @@
 
 
 
-function extractData() {
+    function extractData() {
     const inputText = document.getElementById('inputData').value;
 
     // Split input into lines
@@ -101,7 +138,8 @@ function extractData() {
     const linkedinMatch = document.getElementById('linkedin-url').value;
     const websiteMatch = inputText.match(/Website\s+(http[^\s]+)/);
     const membersMatch = inputText.match(/(\d+)\s+associated members/i);
-    const locationMatch = inputText.match(/Headquarters\s+([\w\s,]+)/);
+    const locationMatch = inputText.match(/Headquarters\s+(.+?)\s+Founded/i);
+    const specialitiesMatch = inputText.match(/Specialties\s+([\s\S]+)/i);
 
     // Extracted data
     const name = nameMatch ? nameMatch[1].trim() : (lines.length > 0 ? lines[0] : "NAN");
@@ -110,6 +148,7 @@ function extractData() {
     const website = websiteMatch ? websiteMatch[1].trim() : "NAN";
     const associatedMembers = membersMatch ? membersMatch[1].trim() : "NAN";
     const location = locationMatch ? locationMatch[1].trim() : "NAN";
+    const specialities = specialitiesMatch ? specialitiesMatch[1].trim() : "NAN";
 
     // Insert the data into the company table
     const tableBody = document.getElementById('outputTable').getElementsByTagName('tbody')[0];
@@ -125,7 +164,8 @@ function extractData() {
     newRow.insertCell(3).innerHTML = '<a href="' + linkedinPage + '" target="_blank">' + linkedinPage + '</a>';
     newRow.insertCell(4).innerHTML = '<a href="' + website + '" target="_blank">' + website + '</a>';
     newRow.insertCell(5).textContent = associatedMembers;
-    newRow.insertCell(6).textContent = location;
+    newRow.insertCell(6).textContent = specialities;
+    newRow.insertCell(7).textContent = location;
 }
 
 
